@@ -9,7 +9,7 @@ function signAccessToken(user) {
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role, nom: user.nom },
     process.env.JWT_SECRET,
-    { expiresIn: '15m' }
+    { expiresIn: '24h' }
   )
 }
 
