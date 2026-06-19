@@ -1,0 +1,159 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  nom       String
+  role      Role     @default(logistique)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  admin
+  logistique
+  chauffeur
+}
+
+model Chauffeur {
+  id           String          @id @default(cuid())
+  nom          String
+  prenom       String
+  telephone    String          @unique
+  permisNumero String?
+  photoUrl     String?
+  statut       StatutChauffeur @default(ACTIF)
+  vehicule     Vehicule?       @relation("ChauffeurVehicule", fields: [vehiculeId], references: [id])
+  vehiculeId   String?         @unique
+  missions     FeuilleDeRoute[]
+  dotations    DotationCarburant[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum StatutChauffeur {
+  ACTIF
+  INACTIF
+}
+
+model Vehicule {
+  id              String         @id @default(cuid())
+  immatriculation String         @unique
+  typeCamion      TypeCamion
+  marque          String?
+  modele          String?
+  consommationRef Float
+  statut          StatutVehicule @default(DISPONIBLE)
+  chauffeur       Chauffeur?     @relation("ChauffeurVehicule")
+  missions        FeuilleDeRoute[]
+  dotations       DotationCarburant[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+enum TypeCamion {
+  HOWO_420
+  HOWO_380
+  MAN_TGS
+  IVECO
+  AUTRE
+}
+
+enum StatutVehicule {
+  DISPONIBLE
+  EN_MISSION
+  MAINTENANCE
+}
+
+model Destination {
+  id            String           @id @default(cuid())
+  nom           String           @unique
+  latitude      Float
+  longitude     Float
+  distanceDakar Float
+  missions      FeuilleDeRoute[]
+}
+
+model FeuilleDeRoute {
+  id              String        @id @default(cuid())
+  numero          String        @unique
+  date            DateTime
+
+  chauffeurId     String
+  chauffeur       Chauffeur     @relation(fields: [chauffeurId], references: [id])
+  vehiculeId      String
+  vehicule        Vehicule      @relation(fields: [vehiculeId], references: [id])
+
+  lieuChargement  String
+  produit         String
+  quantiteTonnes  Float
+  nombreSacs      Int
+  destinationId   String
+  destination     Destination   @relation(fields: [destinationId], references: [id])
+  numeroBl        String?
+  dateDecharge    DateTime?
+  lieuDecharge    String?
+  quantiteLivree  Float?
+  sacsLivres      Int?
+  reserves        String?       @db.Text
+  carburantLitres Float?
+  carburantFcfa   Float?
+  fraisRoute      Float?
+  autresFrais     Float?
+  kmDepart        Int?
+  kmArrivee       Int?
+  kmParcourus     Int?
+  statut          StatutMission @default(EN_ATTENTE)
+  visaLogistique  Boolean       @default(false)
+  visaDirection   Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum StatutMission {
+  EN_ATTENTE
+  EN_ROUTE
+  LIVRE
+  ANNULE
+}
+
+model DotationCarburant {
+  id               String         @id @default(cuid())
+  numeroBon        String         @unique
+  date             DateTime
+  chauffeurId      String
+  chauffeur        Chauffeur      @relation(fields: [chauffeurId], references: [id])
+  vehiculeId       String
+  vehicule         Vehicule       @relation(fields: [vehiculeId], references: [id])
+  itineraire       String
+  distanceKm       Float
+  litresTheoriques Float
+  dotationBrute    Float
+  margeFcfa        Float
+  dotationTotale   Float
+  litresReels      Float?
+  montantReel      Float?
+  ecartLitres      Float?
+  ecartFcfa        Float?
+  statut           StatutDotation @default(EN_ATTENTE)
+  moisPeriode      String
+  responsable      String?
+  validePar        String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+enum StatutDotation {
+  EN_ATTENTE
+  OK
+  DANS_MARGE
+  DEPASSEMENT
+}
