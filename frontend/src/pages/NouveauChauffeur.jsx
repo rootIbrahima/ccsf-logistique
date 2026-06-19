@@ -9,7 +9,7 @@ import api from '../services/api'
 const schema = z.object({
   nom:          z.string().min(2, 'Nom requis (min 2 caractères)'),
   prenom:       z.string().min(2, 'Prénom requis (min 2 caractères)'),
-  telephone:    z.string().min(1, 'Téléphone requis'),
+  telephone:    z.string().regex(/^\+221\s?7[0-9]\s?\d{3}\s?\d{2}\s?\d{2}$/, 'Format invalide — ex : +221 77 123 45 67'),
   permisNumero: z.string().optional(),
   statut:       z.enum(['ACTIF', 'INACTIF']).default('ACTIF'),
   vehiculeId:   z.string().optional()
@@ -38,7 +38,13 @@ export default function NouveauChauffeur() {
       const { data: created } = await api.post('/chauffeurs', payload)
       navigate(`/repertoire/chauffeurs/${created.id}`)
     } catch (err) {
-      setApiError(err.response?.data?.message || 'Erreur lors de la création')
+      const data = err.response?.data
+      if (data?.errors) {
+        const details = Object.entries(data.errors).map(([f, msgs]) => `${f} : ${msgs.join(', ')}`).join(' | ')
+        setApiError(details)
+      } else {
+        setApiError(data?.message || 'Erreur lors de la création')
+      }
     }
   }
 
