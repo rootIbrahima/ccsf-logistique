@@ -37,6 +37,7 @@ export default function NouvelleDotation() {
 
   const watchedDistance    = watch('distanceKm')
   const watchedLitresReels = watch('litresReels')
+  const watchedChauffeurId = watch('chauffeurId')
 
   useEffect(() => {
     Promise.all([
@@ -47,6 +48,16 @@ export default function NouvelleDotation() {
       setVehicules(v.data.data || [])
     }).catch(() => {})
   }, [])
+
+  // Auto-remplissage véhicule selon chauffeur
+  useEffect(() => {
+    const chauffeur = chauffeurs.find(c => c.id === watchedChauffeurId)
+    if (chauffeur?.vehicule?.id) {
+      setValue('vehiculeId', chauffeur.vehicule.id)
+    } else {
+      setValue('vehiculeId', '')
+    }
+  }, [watchedChauffeurId, chauffeurs])
 
   // Calcul prévisualisation
   useEffect(() => {
