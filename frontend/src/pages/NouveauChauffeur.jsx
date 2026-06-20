@@ -9,10 +9,7 @@ import api from '../services/api'
 const schema = z.object({
   nom:          z.string().min(2, 'Nom requis (min 2 caractères)'),
   prenom:       z.string().min(2, 'Prénom requis (min 2 caractères)'),
-  telephone:    z.string().refine(
-    v => /^\+2217\d{8}$/.test(v.replace(/[\s\-\.]/g, '')),
-    'Format invalide — ex : +221 77 123 45 67'
-  ),
+  telephone:    z.string().min(1, 'Téléphone requis'),
   permisNumero: z.string().optional(),
   statut:       z.enum(['ACTIF', 'INACTIF']).default('ACTIF'),
   vehiculeId:   z.string().optional()
