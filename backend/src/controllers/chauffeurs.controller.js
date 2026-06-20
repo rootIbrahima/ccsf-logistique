@@ -18,6 +18,10 @@ async function create(req, res) {
     return res.status(201).json(chauffeur)
   } catch (err) {
     if (err.code === 'P2002') {
+      const target = err.meta?.target ?? ''
+      if (target.includes('vehiculeId')) {
+        return res.status(409).json({ message: 'Ce véhicule est déjà assigné à un autre chauffeur' })
+      }
       return res.status(409).json({ message: 'Ce numéro de téléphone est déjà utilisé' })
     }
     logger.error({ err }, 'Erreur création chauffeur')

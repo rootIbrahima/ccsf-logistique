@@ -26,8 +26,8 @@ export default function NouveauChauffeur() {
   })
 
   useEffect(() => {
-    api.get('/vehicules', { params: { statut: 'DISPONIBLE', limit: 100 } })
-      .then(({ data }) => setVehicules(data.data || []))
+    api.get('/vehicules', { params: { limit: 100 } })
+      .then(({ data }) => setVehicules((data.data || []).filter(v => !v.chauffeur)))
       .catch(() => {})
   }, [])
 
