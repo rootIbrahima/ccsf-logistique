@@ -160,8 +160,6 @@ export default function NouvelleDotation() {
             <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
               <p className="font-medium text-gray-700">Calcul automatique</p>
               <div className="grid grid-cols-2 gap-2 text-gray-600">
-                <span>Litres théoriques</span>
-                <span className="font-mono text-right">{fmt(preview.litresTheo)} L</span>
                 <span className="font-semibold">Dotation totale</span>
                 <span className="font-mono font-semibold text-right text-accent">{fmt(preview.dotationTotale)} FCFA</span>
                 {preview.ecartLitres != null && (
