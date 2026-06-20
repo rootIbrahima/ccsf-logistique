@@ -13,6 +13,9 @@ const chauffeurSelect = {
 async function create(req, res) {
   try {
     const data = req.validatedData
+    if (data.vehiculeId) {
+      await prisma.chauffeur.updateMany({ where: { vehiculeId: data.vehiculeId }, data: { vehiculeId: null } })
+    }
     const chauffeur = await prisma.chauffeur.create({ data, select: chauffeurSelect })
     logger.info({ id: chauffeur.id }, 'Chauffeur créé')
     return res.status(201).json(chauffeur)

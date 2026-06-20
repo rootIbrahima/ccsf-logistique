@@ -27,7 +27,7 @@ export default function NouveauChauffeur() {
 
   useEffect(() => {
     api.get('/vehicules', { params: { limit: 100 } })
-      .then(({ data }) => setVehicules((data.data || []).filter(v => !v.chauffeur)))
+      .then(({ data }) => setVehicules(data.data || []))
       .catch(() => {})
   }, [])
 
@@ -123,7 +123,10 @@ export default function NouveauChauffeur() {
               <select {...register('vehiculeId')} className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent">
                 <option value="">Aucun</option>
                 {vehicules.map(v => (
-                  <option key={v.id} value={v.id}>{v.immatriculation} — {v.typeCamion.replace('_', ' ')}</option>
+                  <option key={v.id} value={v.id}>
+                    {v.immatriculation} — {v.typeCamion.replace('_', ' ')}
+                    {v.chauffeur ? ` (actuellement : ${v.chauffeur.nom} ${v.chauffeur.prenom})` : ''}
+                  </option>
                 ))}
               </select>
             </div>
