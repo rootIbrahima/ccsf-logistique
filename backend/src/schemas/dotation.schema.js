@@ -9,7 +9,8 @@ const dotationSchema = z.object({
   moisPeriode: z.string().regex(/^\d{4}-\d{2}$/, 'Format YYYY-MM requis'),
   responsable: z.string().optional(),
   litresReels: z.number().optional(),
-  montantReel: z.number().optional()
+  montantReel: z.number().optional(),
+  fraisRoute:  z.number().optional()
 })
 
 const dotationUpdateSchema = dotationSchema.partial().extend({

@@ -143,6 +143,7 @@ model DotationCarburant {
   montantReel      Float?
   ecartLitres      Float?
   ecartFcfa        Float?
+  fraisRoute       Float?
   statut           StatutDotation @default(EN_ATTENTE)
   moisPeriode      String
   responsable      String?

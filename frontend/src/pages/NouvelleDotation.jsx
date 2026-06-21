@@ -17,7 +17,8 @@ const schema = z.object({
   distanceKm:  z.coerce.number().positive('Distance requise'),
   moisPeriode: z.string().regex(/^\d{4}-\d{2}$/, 'Format YYYY-MM requis'),
   responsable: z.string().optional(),
-  litresReels: z.coerce.number().optional()
+  litresReels: z.coerce.number().optional(),
+  fraisRoute:  z.coerce.number().optional()
 })
 
 export default function NouvelleDotation() {
@@ -161,9 +162,15 @@ export default function NouvelleDotation() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Responsable</label>
-            <input {...register('responsable')} className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Frais de route (FCFA)</label>
+              <input {...register('fraisRoute', { valueAsNumber: true })} type="number" className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Ex: 45000" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Responsable</label>
+              <input {...register('responsable')} className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent" />
+            </div>
           </div>
 
           {/* Prévisualisation calcul */}

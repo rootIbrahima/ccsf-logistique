@@ -25,6 +25,7 @@ export default function TableauDotation({ dotations, meta, onPageChange, onEdit,
               <th className="px-4 py-3 text-left font-medium">Véhicule</th>
               <th className="px-4 py-3 text-left font-medium">Itinéraire</th>
               <th className="px-4 py-3 text-right font-medium">L. Réels</th>
+              <th className="px-4 py-3 text-right font-medium">Frais route</th>
               <th className="px-4 py-3 text-right font-medium">Dotation (FCFA)</th>
               <th className="px-4 py-3 text-center font-medium">Statut</th>
               {(onEdit || onDelete) && (
@@ -34,7 +35,7 @@ export default function TableauDotation({ dotations, meta, onPageChange, onEdit,
           </thead>
           <tbody className="divide-y divide-gray-100">
             {dotations.length === 0 && (
-              <tr><td colSpan={onEdit || onDelete ? 9 : 8} className="text-center py-8 text-gray-400">Aucune dotation</td></tr>
+              <tr><td colSpan={onEdit || onDelete ? 10 : 9} className="text-center py-8 text-gray-400">Aucune dotation</td></tr>
             )}
             {dotations.map(d => {
               const cfg = statutConfig[d.statut] || statutConfig.EN_ATTENTE
@@ -46,6 +47,7 @@ export default function TableauDotation({ dotations, meta, onPageChange, onEdit,
                   <td className="px-4 py-3 text-gray-600">{d.vehicule?.immatriculation}</td>
                   <td className="px-4 py-3 text-gray-600 max-w-[160px] truncate">{d.itineraire}</td>
                   <td className={`px-4 py-3 text-right font-mono ${cfg.text}`}>{d.litresReels != null ? `${fmt(d.litresReels)} L` : '—'}</td>
+                  <td className="px-4 py-3 text-right font-mono text-gray-600">{d.fraisRoute != null ? fmt(d.fraisRoute) : '—'}</td>
                   <td className={`px-4 py-3 text-right font-mono ${cfg.text}`}>{fmt(d.dotationTotale)}</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${cfg.badge}`}>

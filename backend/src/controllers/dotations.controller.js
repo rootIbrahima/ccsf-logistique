@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 const dotationSelect = {
   id: true, numeroBon: true, date: true, itineraire: true, distanceKm: true,
   litresTheoriques: true, dotationBrute: true, margeFcfa: true, dotationTotale: true,
-  litresReels: true, montantReel: true, ecartLitres: true, ecartFcfa: true,
+  litresReels: true, montantReel: true, ecartLitres: true, ecartFcfa: true, fraisRoute: true,
   statut: true, moisPeriode: true, responsable: true, validePar: true, createdAt: true,
   chauffeur: { select: { id: true, nom: true, prenom: true, telephone: true } },
   vehicule:  { select: { id: true, immatriculation: true, typeCamion: true } }
@@ -17,7 +17,7 @@ const dotationSelect = {
 
 async function create(req, res) {
   try {
-    const { chauffeurId, vehiculeId, distanceKm, date, itineraire, moisPeriode, responsable, litresReels, montantReel } = req.validatedData
+    const { chauffeurId, vehiculeId, distanceKm, date, itineraire, moisPeriode, responsable, litresReels, montantReel, fraisRoute } = req.validatedData
 
     const { litresTheo, dotationBrute, margeFcfa, dotationTotale } = calculerDotation(distanceKm)
 
@@ -40,7 +40,7 @@ async function create(req, res) {
         numeroBon, date: new Date(date),
         chauffeurId, vehiculeId, itineraire, distanceKm,
         litresTheoriques: litresTheo, dotationBrute, margeFcfa, dotationTotale,
-        litresReels, montantReel, ecartLitres, ecartFcfa, statut,
+        litresReels, montantReel, ecartLitres, ecartFcfa, fraisRoute, statut,
         moisPeriode, responsable
       },
       select: dotationSelect
@@ -133,7 +133,7 @@ async function getStatsMensuel(req, res) {
       where: { moisPeriode: mois },
       select: {
         litresTheoriques: true, litresReels: true, dotationTotale: true,
-        ecartLitres: true, statut: true,
+        ecartLitres: true, fraisRoute: true, statut: true,
         vehicule: { select: { immatriculation: true, typeCamion: true } }
       }
     })
@@ -142,6 +142,7 @@ async function getStatsMensuel(req, res) {
       totalDotationFcfa: dotations.reduce((s, d) => s + (d.dotationTotale || 0), 0),
       totalLitresTheo:   dotations.reduce((s, d) => s + (d.litresTheoriques || 0), 0),
       totalLitresReels:  dotations.reduce((s, d) => s + (d.litresReels || 0), 0),
+      totalFraisRoute:   dotations.reduce((s, d) => s + (d.fraisRoute || 0), 0),
       dansMargeCount:    dotations.filter(d => d.statut === 'DANS_MARGE').length,
       okCount:           dotations.filter(d => d.statut === 'OK').length,
       total:             dotations.length

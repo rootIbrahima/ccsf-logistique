@@ -153,10 +153,11 @@ export default function Dotations() {
 
       {/* KPIs */}
       {stats && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Total dotation (FCFA)', value: fmt(stats.totalDotationFcfa), color: 'bg-primary' },
-            { label: 'Litres réels',          value: `${fmt(stats.totalLitresReels)} L`, color: 'bg-green-600' },
+            { label: 'Total dotation (FCFA)',   value: fmt(stats.totalDotationFcfa),         color: 'bg-primary' },
+            { label: 'Litres réels',            value: `${fmt(stats.totalLitresReels)} L`,   color: 'bg-green-600' },
+            { label: 'Total frais de route',    value: `${fmt(stats.totalFraisRoute)} FCFA`, color: 'bg-orange-500' },
           ].map((k, i) => (
             <div key={i} className={`${k.color} text-white rounded-xl p-4`}>
               <p className="text-xs opacity-75">{k.label}</p>
