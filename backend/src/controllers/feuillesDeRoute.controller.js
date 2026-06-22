@@ -108,16 +108,19 @@ async function update(req, res) {
   try {
     const data = req.validatedData
 
-    if (data.kmDepart != null && data.kmArrivee != null) {
-      data.kmParcourus = data.kmArrivee - data.kmDepart
-    }
     if (data.date) data.date = new Date(data.date)
 
-    // Lire le statut précédent pour détecter le passage à LIVRE
+    // Lire le statut et kmDepart précédents
     const existing = await prisma.feuilleDeRoute.findUnique({
       where: { id: req.params.id },
-      select: { statut: true, vehiculeId: true }
+      select: { statut: true, vehiculeId: true, kmDepart: true }
     })
+
+    // Calculer kmParcourus même si seul kmArrivee est fourni
+    const effectiveKmDepart = data.kmDepart ?? existing?.kmDepart
+    if (effectiveKmDepart != null && data.kmArrivee != null) {
+      data.kmParcourus = data.kmArrivee - effectiveKmDepart
+    }
 
     const fdr = await prisma.feuilleDeRoute.update({
       where: { id: req.params.id },
