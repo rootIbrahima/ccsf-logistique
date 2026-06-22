@@ -36,6 +36,22 @@ async function create(req, res) {
       select: fdrSelect
     })
 
+    // Si créée directement en LIVRE avec des km
+    if (fdr.statut === 'LIVRE' && fdr.kmParcourus) {
+      const vehicule = await prisma.vehicule.update({
+        where: { id: fdr.vehicule.id },
+        data: { kmDepuisMaintenance: { increment: fdr.kmParcourus } },
+        select: { kmDepuisMaintenance: true, statut: true }
+      })
+      if (vehicule.kmDepuisMaintenance >= SEUIL_MAINTENANCE_KM && vehicule.statut !== 'MAINTENANCE') {
+        await prisma.vehicule.update({
+          where: { id: fdr.vehicule.id },
+          data: { statut: 'MAINTENANCE' }
+        })
+        logger.info({ vehiculeId: fdr.vehicule.id, km: vehicule.kmDepuisMaintenance }, 'Véhicule passé en MAINTENANCE (seuil atteint)')
+      }
+    }
+
     logger.info({ id: fdr.id, numero }, 'Feuille de route créée')
     return res.status(201).json(fdr)
   } catch (err) {
