@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 const vehiculeSelect = {
   id: true, immatriculation: true, typeCamion: true, marque: true,
-  modele: true, consommationRef: true, statut: true, createdAt: true,
+  modele: true, consommationRef: true, statut: true, kmDepuisMaintenance: true, createdAt: true,
   chauffeur: { select: { id: true, nom: true, prenom: true, telephone: true } }
 }
 
@@ -89,6 +89,11 @@ async function update(req, res) {
       data.chauffeur = chauffeurId
         ? { connect: { id: chauffeurId } }
         : { disconnect: true }
+    }
+
+    // Retour de maintenance → remise à zéro du compteur km
+    if (data.statut === 'DISPONIBLE') {
+      data.kmDepuisMaintenance = 0
     }
 
     const vehicule = await prisma.vehicule.update({

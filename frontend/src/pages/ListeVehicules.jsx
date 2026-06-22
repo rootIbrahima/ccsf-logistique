@@ -167,6 +167,24 @@ export default function ListeVehicules() {
                   </div>
                 )}
 
+                {/* Barre de progression maintenance */}
+                {(() => {
+                  const km = v.kmDepuisMaintenance ?? 0
+                  const pct = Math.min((km / 5000) * 100, 100)
+                  const color = pct >= 100 ? 'bg-red-500' : pct >= 80 ? 'bg-orange-400' : 'bg-green-500'
+                  return (
+                    <div className="mb-3">
+                      <div className="flex justify-between text-xs text-gray-500 mb-1">
+                        <span>Km depuis maintenance</span>
+                        <span className={pct >= 80 ? 'font-semibold text-orange-500' : ''}>{km.toLocaleString('fr-FR')} / 5 000 km</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-1.5">
+                        <div className={`${color} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  )
+                })()}
+
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                   <div className="flex items-center gap-3">

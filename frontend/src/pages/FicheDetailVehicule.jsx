@@ -182,6 +182,27 @@ export default function FicheDetailVehicule() {
                 </Link>
               </div>
             )}
+            <div className="col-span-2 mt-1">
+              {(() => {
+                const km = vehicule.kmDepuisMaintenance ?? 0
+                const pct = Math.min((km / 5000) * 100, 100)
+                const color = pct >= 100 ? 'bg-red-500' : pct >= 80 ? 'bg-orange-400' : 'bg-green-500'
+                const textColor = pct >= 100 ? 'text-red-600' : pct >= 80 ? 'text-orange-500' : 'text-gray-500'
+                return (
+                  <>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-gray-500">Km depuis dernière maintenance</span>
+                      <span className={`font-semibold ${textColor}`}>{km.toLocaleString('fr-FR')} / 5 000 km</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2">
+                      <div className={`${color} h-2 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                    </div>
+                    {pct >= 100 && <p className="text-xs text-red-600 font-medium mt-1">Maintenance requise</p>}
+                    {pct >= 80 && pct < 100 && <p className="text-xs text-orange-500 mt-1">Maintenance bientôt nécessaire</p>}
+                  </>
+                )
+              })()}
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSave)} className="space-y-4">

@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client')
 const logger = require('../utils/logger')
 const { getPagination, paginate } = require('../utils/pagination')
 const { generateFeuilleDeRoutePDF } = require('../services/pdf.service')
+const { SEUIL_MAINTENANCE_KM } = require('../constants/fuel')
 
 const prisma = new PrismaClient()
 
@@ -96,11 +97,34 @@ async function update(req, res) {
     }
     if (data.date) data.date = new Date(data.date)
 
+    // Lire le statut précédent pour détecter le passage à LIVRE
+    const existing = await prisma.feuilleDeRoute.findUnique({
+      where: { id: req.params.id },
+      select: { statut: true, vehiculeId: true }
+    })
+
     const fdr = await prisma.feuilleDeRoute.update({
       where: { id: req.params.id },
       data,
       select: fdrSelect
     })
+
+    // Si la mission vient de passer à LIVRE et a des km enregistrés
+    if (existing?.statut !== 'LIVRE' && fdr.statut === 'LIVRE' && fdr.kmParcourus) {
+      const vehicule = await prisma.vehicule.update({
+        where: { id: existing.vehiculeId },
+        data: { kmDepuisMaintenance: { increment: fdr.kmParcourus } },
+        select: { kmDepuisMaintenance: true, statut: true }
+      })
+      if (vehicule.kmDepuisMaintenance >= SEUIL_MAINTENANCE_KM && vehicule.statut !== 'MAINTENANCE') {
+        await prisma.vehicule.update({
+          where: { id: existing.vehiculeId },
+          data: { statut: 'MAINTENANCE' }
+        })
+        logger.info({ vehiculeId: existing.vehiculeId, km: vehicule.kmDepuisMaintenance }, 'Véhicule passé en MAINTENANCE (seuil atteint)')
+      }
+    }
+
     return res.json(fdr)
   } catch (err) {
     if (err.code === 'P2025') return res.status(404).json({ message: 'Feuille de route introuvable' })

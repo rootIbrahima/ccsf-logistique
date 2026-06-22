@@ -51,8 +51,9 @@ model Vehicule {
   marque          String?
   modele          String?
   consommationRef Float
-  statut          StatutVehicule @default(DISPONIBLE)
-  chauffeur       Chauffeur?     @relation("ChauffeurVehicule")
+  statut               StatutVehicule @default(DISPONIBLE)
+  kmDepuisMaintenance  Float          @default(0)
+  chauffeur            Chauffeur?     @relation("ChauffeurVehicule")
   missions        FeuilleDeRoute[]
   dotations       DotationCarburant[]
   createdAt       DateTime       @default(now())
